@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+
+    <style>
+      body {
+        font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+      }
+      @keyframes blink {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      .caret {
+        animation: blink 0.5s infinite;
+      }
+
+      #play {
+        display: inline-block;
+        padding: 20px 30px 20px;
+        color: white;
+        font-weight: bold;
+        font-size: 25px;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all ease 0.3s;
+        background-color: rgb(253, 74, 74);
+      }
+      #play:hover {
+        background-color: #ff000098;
+      }
+      #play i {
+        display: inline-block;
+        border-width: 7px 0 7px 10px;
+        margin-left: 10px;
+        border-color: transparent transparent transparent white;
+        border-style: solid;
+      }
+      .container {
+        max-width: 500px;
+        margin: 50px auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Receiving: <span id="message"></span><span class="caret">|</span></h1>
+      <script src="./demorse.js"></script>
+      <audio src="./mp-604d15d8c3e1c.mp3"></audio>
+      <p>Play a pre-recorded sample of morse code.</p>
+      <p>
+        First 5-6 letters are used for calibration of the receiver. It warms up
+        and adjusts to the pace and frequency.
+      </p>
+      <div id="play">Play<i></i></div>
+
+      <h2>How to use demorse.js:</h2>
+      <h3>With audio file</h3>
+      <script src="https://gist.github.com/Mosquid/7a39503aac306c0a41d2fad29534b41a.js"></script>
+
+      <h3>With User Media</h3>
+      <script src="https://gist.github.com/Mosquid/a3eab50d3018c6ee6042632cb9364ff3.js"></script>
+
+      <h2>Configuration:</h2>
+      <script src="https://gist.github.com/Mosquid/b17e11f64c6eeab7541a85574eb6bf14.js"></script>
+    </div>
+    <script>
+      const audio = document.querySelector("audio");
+      document.querySelector("#play").addEventListener("click", (e) => {
+        audio.play();
+        e.target.remove();
+      });
+
+      const initDecoder = (stream) => {
+        const decoder = new Demorse({
+          stream,
+          render: (str) => {
+            document.querySelector("#message").innerText = str;
+          },
+        });
+      };
+
+      audio.addEventListener("play", (e) => initDecoder(e.target));
+    </script>
+  </body>
+</html>
