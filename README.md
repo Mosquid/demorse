@@ -1,1 +1,1 @@
-# Demorse.js - a JS morse code receiver
+# Demorse.js - a JS morse code decoder
