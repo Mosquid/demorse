@@ -47,6 +47,21 @@
         max-width: 500px;
         margin: 50px auto;
       }
+      #progress {
+        height: 16px;
+        background-color: #eaeaea;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+      }
+      #bar {
+        background-color: rgb(219, 60, 60);
+        position: absolute;
+        height: 100%;
+        left: 0;
+        width: 0;
+      }
     </style>
   </head>
   <body>
@@ -73,6 +88,8 @@
     </div>
     <script>
       const audio = document.querySelector("audio");
+      audio.volume = 0.1;
+
       document.querySelector("#play").addEventListener("click", (e) => {
         audio.play();
         e.target.remove();
