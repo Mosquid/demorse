@@ -118,6 +118,7 @@ class Demorse {
     this.decode();
     requestAnimationFrame(this.tick.bind(this));
     this.analyser.getFloatTimeDomainData(this.dataArray);
+
     if (this.low > this.idle) {
       this.codeArray.push([]);
       return this.decode();
@@ -133,7 +134,7 @@ class Demorse {
           this.renderString += w;
 
           if (this.render && typeof this.render === "function")
-            this.render(this.renderString);
+            this.render.call(this, this.renderString, cd);
         }
       }
     }

@@ -67,6 +67,7 @@
   <body>
     <div class="container">
       <h1>Receiving: <span id="message"></span><span class="caret">|</span></h1>
+      <h2>&nbsp;<span id="code"></span></h2>
       <script src="./demorse.js"></script>
       <audio src="./mp-604d15d8c3e1c.mp3"></audio>
       <p>Play a pre-recorded sample of morse code.</p>
@@ -89,6 +90,7 @@
     <script>
       const audio = document.querySelector("audio");
       audio.volume = 0.1;
+      const code = document.querySelector("#code");
 
       document.querySelector("#play").addEventListener("click", (e) => {
         audio.play();
@@ -98,7 +100,9 @@
       const initDecoder = (stream) => {
         const decoder = new Demorse({
           stream,
-          render: (str) => {
+          render: function (str, currentCode) {
+            currentCode = currentCode.replace("^", " ");
+            code.innerText = code.innerText += currentCode;
             document.querySelector("#message").innerText = str;
           },
         });
