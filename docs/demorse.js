@@ -116,7 +116,9 @@ class Demorse {
       this.high = 0;
     }
     this.decode();
-    requestAnimationFrame(this.tick.bind(this));
+    setTimeout(() => {
+      this.tick.bind(this);
+    }, 10);
     this.analyser.getFloatTimeDomainData(this.dataArray);
 
     if (this.low > this.idle) {
