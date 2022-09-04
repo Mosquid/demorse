@@ -76,70 +76,64 @@ class Demorse {
     this.tick.call(this);
   }
 
-  tick() {
-    const abs = this.dataArray.map(Math.abs).sort((a, b) => b - a)[0] * 100;
+  getArrayAverage(arr) {
+    return arr.reduce((acc, curr) => 100 * acc + curr, 0) / arr.length;
+  }
 
+  tick = () => {
+    const abs = this.getArrayAverage(this.dataArray.map(Math.abs));
+
+    //handling the beep
     if (abs > 1) {
-      if (this.low && 10 * this.low >= this.longPause) {
-        const tone = Math.round((this.low * 100) / this.longPause);
+      // get percentage of a know long pause
+      const durationSilent = Math.round((this.low * 100) / this.longPause);
 
-        if (tone > 30) {
-          if (tone >= 70) {
-            this.codeArray.push(["^"]);
-          }
-          this.codeArray.push([]);
-        }
+      if (durationSilent > this.idle) {
+        this.codeArray.push(["^"]);
       }
 
-      if (!this.longBeep || this.high > this.longBeep) {
-        this.longBeep = this.high;
+      if (durationSilent > 30) {
+        this.codeArray.push([]);
       }
 
-      if (!this.longPause || this.low > this.longPause) {
-        this.longPause = this.low;
-      }
+      this.longPause = Math.max(this.low, this.longPause);
+      this.longBeep = Math.max(this.high, this.longBeep);
 
       this.high++;
+
       this.low = 0;
     } else {
+      //handling end of the beep
       if (this.high && 10 * this.high >= this.longBeep) {
-        const tone = Math.floor(this.longBeep / this.high);
+        // if this.high is closer to longBeep
+        const isLongTone = Math.floor(this.longBeep / this.high) <= 1;
+        const symbol = isLongTone ? "-" : ".";
 
-        if (tone <= 1) {
-          this.codeArray[this.codeArray.length - 1].push("-");
-        } else {
-          this.codeArray[this.codeArray.length - 1].push(".");
-        }
+        this.codeArray[this.codeArray.length - 1].push(symbol);
       }
 
       this.low++;
       this.high = 0;
     }
-    this.decode();
-    setTimeout(
-      function () {
-        this.tick.call(this);
-      }.bind(this),
-      10
-    );
-    this.analyser.getFloatTimeDomainData(this.dataArray);
 
-    if (this.low > this.idle) {
-      this.codeArray.push([]);
-      return this.decode();
-    }
-  }
+    this.decode();
+    setTimeout(this.tick, 10);
+    this.analyser.getFloatTimeDomainData(this.dataArray);
+  };
 
   decode() {
     if (this.codeArray[this.codeArray.length - 2]) {
-      var cd = this.codeArray.shift().join("");
+      const latestWord = this.codeArray.shift().join("");
+      const symbolIndex = Object.values(this.code).findIndex(
+        (it) => it === latestWord
+      );
+      const symbol = Object.keys(this.code)[symbolIndex];
 
-      for (let w in this.code) {
-        if (this.code[w] == cd) {
-          this.renderString += w;
+      if (!!symbol) {
+        this.renderString += symbol;
 
-          if (this.render && typeof this.render === "function")
-            this.render.call(this, this.renderString, cd);
+        if (this.render && typeof this.render === "function") {
+          this.render.call(this, this.renderString, latestWord);
         }
       }
     }
