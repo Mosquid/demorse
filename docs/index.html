@@ -22,6 +22,17 @@
         animation: blink 0.5s infinite;
       }
 
+      .button {
+        display: inline-block;
+        padding: 20px 30px 20px;
+        color: white;
+        font-weight: bold;
+        font-size: 25px;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all ease 0.3s;
+        background-color: rgb(253, 74, 74);
+      }
       #play {
         display: inline-block;
         padding: 20px 30px 20px;
@@ -68,7 +79,7 @@
     <div class="container">
       <h1>Receiving: <span id="message"></span><span class="caret">|</span></h1>
       <pre
-        style="color: red; white-space: normal; font-family: monospace;"
+        style="color: red; white-space: normal; font-family: monospace"
       >&nbsp;<span id="code"></span></pre>
       <script src="./demorse.js"></script>
       <audio src="./mp-604d15d8c3e1c.mp3"></audio>
@@ -77,7 +88,8 @@
         First 5-6 letters are used for calibration of the receiver. It warms up
         and adjusts to the pace and frequency.
       </p>
-      <div id="play">Play<i></i></div>
+      <div class="button" id="play">Play<i></i></div>
+      <div class="button" id="listen">Listen<i></i></div>
 
       <h2>How to use demorse.js:</h2>
       <h3>With audio file</h3>
@@ -111,6 +123,19 @@
       };
 
       audio.addEventListener("play", (e) => initDecoder(e.target));
+
+      const initListener = (stream) => {
+        const decoder = new Demorse({
+          stream,
+          render: (str) => {
+            document.querySelector("#message").innerText = str;
+          },
+        });
+      };
+
+      document.querySelector("#listen").addEventListener("click", () => {
+        navigator.getUserMedia({ audio: true }, initListener, console.error);
+      });
     </script>
   </body>
 </html>

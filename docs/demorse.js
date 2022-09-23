@@ -48,11 +48,13 @@ class Demorse {
     " ": "^",
   };
 
-  constructor({ stream, fft = 32, idle = 75, render }) {
+  constructor({ stream, fft = 1024, idle = 75, threshold = 45, render }) {
     this.render = render || console.log;
     this.idle = idle;
+    this.threshold = threshold;
     this.audioCtx = new window.AudioContext();
     this.analyser = this.audioCtx.createAnalyser();
+    this.processor = this.audioCtx.createScriptProcessor(2048, 1, 1);
     this.renderString = "";
 
     if (!stream) return this.noStreamError();
@@ -62,7 +64,9 @@ class Demorse {
         ? this.audioCtx.createMediaElementSource(stream)
         : this.audioCtx.createMediaStreamSource(stream);
     source.connect(this.analyser);
+    this.analyser.connect(this.processor);
     source.connect(this.audioCtx.destination);
+    this.processor.connect(this.audioCtx.destination);
     this.analyser.fftSize = fft;
     this.analyser.connect(this.audioCtx.destination);
 
@@ -72,19 +76,39 @@ class Demorse {
     this.longBeep = 0;
     this.longPause = 0;
     this.codeArray = [[]];
+    this.maxVolume = 1;
 
-    this.tick.call(this);
+    this.processor.onaudioprocess = this.tick;
   }
 
-  getArrayAverage(arr) {
-    return arr.reduce((acc, curr) => 100 * acc + curr, 0) / arr.length;
+  normalize(num) {
+    return Math.round(((100 + this.threshold) * num) / this.maxVolume / 100);
+  }
+
+  getArrayMax(arr) {
+    return arr.sort().pop();
+  }
+
+  getArrayAvg(arr = []) {
+    const arrLen = Math.max(arr.length, 1);
+    const sum = arr.reduce((sum, cur) => {
+      return sum + cur;
+    }, 0);
+
+    const avg = sum / arrLen;
+
+    return avg;
   }
 
   tick = () => {
-    const abs = this.getArrayAverage(this.dataArray.map(Math.abs));
+    const abs = this.getArrayAvg(
+      Array.from(this.dataArray).map((x) => Math.abs(x) * 100)
+    );
+    this.maxVolume = Math.max(abs, this.maxVolume);
 
+    const normal = this.normalize(abs);
     //handling the beep
-    if (abs > 1) {
+    if (normal >= 1) {
       // get percentage of a know long pause
       const durationSilent = Math.round((this.low * 100) / this.longPause);
 
@@ -117,7 +141,6 @@ class Demorse {
     }
 
     this.decode();
-    setTimeout(this.tick, 10);
     this.analyser.getFloatTimeDomainData(this.dataArray);
   };
 
@@ -140,6 +163,6 @@ class Demorse {
   }
 
   noStreamError() {
-    console.error("No stream specified");
+    console.error("No stream detected");
   }
 }
