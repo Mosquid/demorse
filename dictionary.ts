@@ -1,4 +1,4 @@
-export const code = {
+export default {
   0: "-----",
   1: ".----",
   2: "..---",

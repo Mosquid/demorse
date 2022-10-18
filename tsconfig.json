@@ -1,11 +1,15 @@
 {
   "compilerOptions": {
-    "module": "System",
     "target": "ESNext",
+    "module": "CommonJS",
+    "lib": [
+      "es5",
+      "es6",
+      "dom"
+    ],
     "noImplicitAny": true,
     "removeComments": true,
     "preserveConstEnums": true,
-    "outFile": "./docs/demorse.js",
     "sourceMap": true
   },
   "include": [

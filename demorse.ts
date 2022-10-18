@@ -1,4 +1,4 @@
-import { code } from "./dictionary";
+import code from "./dictionary";
 
 interface InitParams {
   stream: HTMLMediaElement | MediaStream;
@@ -145,6 +145,10 @@ class Demorse {
 
     this.processor.onaudioprocess = this.tick;
   }
+}
+
+if (typeof window != "undefined") {
+  (<Window & any>window).Demorse = Demorse;
 }
 
 export default Demorse;
