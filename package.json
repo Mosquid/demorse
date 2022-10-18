@@ -1,0 +1,27 @@
+{
+  "name": "demorse",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "start": "tsc --watch",
+    "build": "tsc -b"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Mosquid/demorse.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Mosquid/demorse/issues"
+  },
+  "homepage": "https://github.com/Mosquid/demorse#readme",
+  "dependencies": {
+    "typescript": "^4.8.4"
+  }
+}

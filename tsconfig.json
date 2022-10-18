@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "module": "System",
+    "target": "ESNext",
+    "noImplicitAny": true,
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "outFile": "./docs/demorse.js",
+    "sourceMap": true
+  },
+  "include": [
+    "./*"
+  ],
+  "exclude": [
+    "node_modules",
+    "**/*.spec.ts"
+  ]
+}
